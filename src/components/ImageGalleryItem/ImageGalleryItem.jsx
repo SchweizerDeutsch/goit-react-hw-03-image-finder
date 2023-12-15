@@ -1,13 +1,17 @@
 import React from 'react';
+import {
+  StyledGalleryItem,
+  StyledGalleryItemImage,
+} from './ImageGalleryItem.styled';
 
 const ImageGalleryItem = ({ image, onClick }) => (
-  <li className="gallery-item" onClick={onClick}>
-    <img
+  <StyledGalleryItem className="gallery-item" onClick={onClick}>
+    <StyledGalleryItemImage
       src={image.webformatURL}
       alt={image.tags}
       className="gallery-item-image"
     />
-  </li>
+  </StyledGalleryItem>
 );
 
 export default ImageGalleryItem;

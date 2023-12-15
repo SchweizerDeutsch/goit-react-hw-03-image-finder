@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Form, Header, Input, SubmitButton } from './Searchbar.styled';
 
 class Searchbar extends Component {
   state = {
@@ -11,19 +12,25 @@ class Searchbar extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+
+    if (!this.state.query.trim()) {
+      alert('Can not be empty"');
+      return;
+    }
+
     this.props.onSubmit(this.state.query);
     this.setState({ query: '' });
   };
 
   render() {
     return (
-      <header className="searchbar">
-        <form className="form" onSubmit={this.handleSubmit}>
-          <button type="submit" className="button">
+      <Header className="searchbar">
+        <Form className="form" onSubmit={this.handleSubmit}>
+          <SubmitButton type="submit" className="button">
             <span className="button-label">Search</span>
-          </button>
+          </SubmitButton>
 
-          <input
+          <Input
             className="input"
             type="text"
             autoComplete="off"
@@ -32,8 +39,8 @@ class Searchbar extends Component {
             value={this.state.query}
             onChange={this.handleChange}
           />
-        </form>
-      </header>
+        </Form>
+      </Header>
     );
   }
 }

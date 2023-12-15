@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ModalContainer, ModalImage, Overlay } from './Modal.styled';
 
 class Modal extends Component {
   componentDidMount() {
@@ -23,11 +24,11 @@ class Modal extends Component {
 
   render() {
     return (
-      <div className="Overlay" onClick={this.handleBackdropClick}>
-        <div className="Modal">
-          <img src={this.props.imageURL} alt="Modal" />
-        </div>
-      </div>
+      <Overlay className="Overlay" onClick={this.handleBackdropClick}>
+        <ModalContainer className="Modal">
+          <ModalImage src={this.props.imageURL} alt="Modal" />
+        </ModalContainer>
+      </Overlay>
     );
   }
 }

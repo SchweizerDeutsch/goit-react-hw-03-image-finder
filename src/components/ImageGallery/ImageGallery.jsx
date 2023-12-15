@@ -1,82 +1,145 @@
 import React, { Component } from 'react';
-
+import PropTypes from 'prop-types';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import Button from '../Button/Button';
 import Loader from '../Loader/Loader';
 import Modal from '../Modal/Modal';
+import {
+  GalleryContainer,
+  GalleryList,
+  LoadMoreContainer,
+} from './ImageGallery.styled';
 
 class ImageGallery extends Component {
-  state = {
-    images: [],
-    currentPage: 1,
-    isLoading: false,
-    showModal: false,
-    modalImage: '',
-  };
-
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.query !== this.props.query) {
-      this.setState({ images: [], currentPage: 1 }, () => this.fetchImages());
+      this.props.resetImages();
     }
   }
 
-  fetchImages = () => {
-    const { query } = this.props;
-    const { currentPage } = this.state;
-    const apiKey = '38911992-4282f3ea184d2afaa0285965b';
-
-    this.setState({ isLoading: true });
-
-    fetch(
-      `https://pixabay.com/api/?q=${query}&page=${currentPage}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
-    )
-      .then(response => response.json())
-      .then(data => {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...data.hits],
-          currentPage: prevState.currentPage + 1,
-          isLoading: false,
-        }));
-      })
-      .catch(error => {
-        console.error('Error fetching images:', error);
-        this.setState({ isLoading: false });
-      });
-  };
-
-  openModal = imageURL => {
-    this.setState({ showModal: true, modalImage: imageURL });
-  };
-
-  closeModal = () => {
-    this.setState({ showModal: false, modalImage: '' });
-  };
-
   render() {
-    const { images, isLoading, showModal, modalImage } = this.state;
+    const {
+      images,
+      isLoading,
+      showModal,
+      modalImage,
+      onOpenModal,
+      onCloseModal,
+      handleLoadMore,
+      loadMore,
+    } = this.props;
 
     return (
-      <div>
-        <ul className="gallery">
-          {images.map(image => (
+      <GalleryContainer>
+        <GalleryList>
+          {images.map((image, index) => (
             <ImageGalleryItem
-              key={image.id}
+              key={`${image.id}_${index}`}
               image={image}
-              onClick={() => this.openModal(image.largeImageURL)}
+              onClick={() => onOpenModal(image.largeImageURL)}
             />
           ))}
-        </ul>
+        </GalleryList>
 
         {isLoading && <Loader />}
 
-        {images.length > 0 && !isLoading && (
-          <Button onClick={this.fetchImages} />
+        {images.length > 0 && !isLoading && loadMore && (
+          <LoadMoreContainer>
+            <Button onClick={handleLoadMore} />
+          </LoadMoreContainer>
         )}
 
-        {showModal && <Modal imageURL={modalImage} onClose={this.closeModal} />}
-      </div>
+        {images.length > 0 && !isLoading && (
+          <LoadMoreContainer>
+            <Button onClick={this.props.fetchImages} />
+          </LoadMoreContainer>
+        )}
+
+        {showModal && <Modal imageURL={modalImage} onClose={onCloseModal} />}
+      </GalleryContainer>
     );
   }
 }
 
+ImageGallery.propTypes = {
+  images: PropTypes.array.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  showModal: PropTypes.bool.isRequired,
+  modalImage: PropTypes.string.isRequired,
+  onOpenModal: PropTypes.func.isRequired,
+  onCloseModal: PropTypes.func.isRequired,
+  fetchImages: PropTypes.func.isRequired,
+  resetImages: PropTypes.func.isRequired,
+  query: PropTypes.string.isRequired,
+};
+
 export default ImageGallery;
+
+// import React, { Component } from 'react';
+// import PropTypes from 'prop-types';
+// import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
+// import Button from '../Button/Button';
+// import Loader from '../Loader/Loader';
+// import Modal from '../Modal/Modal';
+// import { GalleryContainer, GalleryList } from './ImageGallery.styled';
+
+// class ImageGallery extends Component {
+//   componentDidUpdate(prevProps) {
+//     if (prevProps.query !== this.props.query) {
+//       this.props.resetImages();
+//     }
+//   }
+
+//   render() {
+//     const {
+//       images,
+//       isLoading,
+//       showModal,
+//       modalImage,
+//       onOpenModal,
+//       onCloseModal,
+//       handleLoadMore,
+//       loadMore,
+//     } = this.props;
+
+//     return (
+//       <GalleryContainer>
+//         <GalleryList className="gallery">
+//           {images.map((image, index) => (
+//             <ImageGalleryItem
+//               key={`${image.id}_${index}`}
+//               image={image}
+//               onClick={() => onOpenModal(image.largeImageURL)}
+//             />
+//           ))}
+//         </GalleryList>
+
+//         {isLoading && <Loader />}
+
+//         {images.length > 0 && !isLoading && loadMore && (
+//           <Button onClick={handleLoadMore} />
+//         )}
+
+//         {images.length > 0 && !isLoading && (
+//           <Button onClick={this.props.fetchImages} />
+//         )}
+
+//         {showModal && <Modal imageURL={modalImage} onClose={onCloseModal} />}
+//       </GalleryContainer>
+//     );
+//   }
+// }
+
+// ImageGallery.propTypes = {
+//   images: PropTypes.array.isRequired,
+//   isLoading: PropTypes.bool.isRequired,
+//   showModal: PropTypes.bool.isRequired,
+//   modalImage: PropTypes.string.isRequired,
+//   onOpenModal: PropTypes.func.isRequired,
+//   onCloseModal: PropTypes.func.isRequired,
+//   fetchImages: PropTypes.func.isRequired,
+//   resetImages: PropTypes.func.isRequired,
+//   query: PropTypes.string.isRequired,
+// };
+
+// export default ImageGallery;
